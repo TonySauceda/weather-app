@@ -7,8 +7,13 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+builder.Services.AddMemoryCache();
 builder.Services.AddScoped<IWeatherMediator, WeatherMediator>();
 builder.Services.AddScoped<IQueryHandler<GetWeatherForecastQuery, WeatherForecastResponse>, GetWeatherForecastQueryHandler>();
+builder.Services.AddHttpClient<IOpenMeteoClient, OpenMeteoClient>(client =>
+{
+    client.Timeout = TimeSpan.FromSeconds(10);
+});
 
 var app = builder.Build();
 
