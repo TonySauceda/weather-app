@@ -1,6 +1,7 @@
 using weather_app.Components;
 using weather_app.Application.Mediator;
 using weather_app.Features.WeatherForecast.GetForecast;
+using weather_app.Features.WeatherForecast.SearchCities;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +11,7 @@ builder.Services.AddRazorComponents()
 builder.Services.AddMemoryCache();
 builder.Services.AddScoped<IWeatherMediator, WeatherMediator>();
 builder.Services.AddScoped<IQueryHandler<GetWeatherForecastQuery, WeatherForecastResponse>, GetWeatherForecastQueryHandler>();
+builder.Services.AddScoped<IQueryHandler<SearchCitiesQuery, IReadOnlyList<CitySearchResult>>, SearchCitiesQueryHandler>();
 builder.Services.AddHttpClient<IOpenMeteoClient, OpenMeteoClient>(client =>
 {
     client.Timeout = TimeSpan.FromSeconds(10);

@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Net.Http.Json;
+using weather_app.Features.WeatherForecast.SearchCities;
 
 namespace weather_app.Features.WeatherForecast.GetForecast;
 
@@ -8,6 +9,48 @@ public sealed class OpenMeteoClient(HttpClient httpClient) : IOpenMeteoClient
     public async Task<WeatherForecastResponse> GetForecastAsync(string city, CancellationToken cancellationToken)
     {
         var location = await GetLocationAsync(city, cancellationToken);
+        return await GetForecastAsync(location, cancellationToken);
+    }
+
+    public Task<WeatherForecastResponse> GetForecastAsync(CitySearchResult city, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(city);
+
+        return GetForecastAsync(
+            new OpenMeteoLocation
+            {
+                Name = city.Name,
+                AdministrativeArea = city.AdministrativeArea,
+                Country = city.Country,
+                Latitude = city.Latitude,
+                Longitude = city.Longitude
+            },
+            cancellationToken);
+    }
+
+    public async Task<IReadOnlyList<CitySearchResult>> SearchCitiesAsync(
+        string searchText,
+        CancellationToken cancellationToken)
+    {
+        var response = await httpClient.GetFromJsonAsync<OpenMeteoGeocodingResponse>(
+            $"https://geocoding-api.open-meteo.com/v1/search?name={Uri.EscapeDataString(searchText)}&count=8&language=es&format=json",
+            cancellationToken);
+
+        return response?.Results?
+            .Take(8)
+            .Select(location => new CitySearchResult(
+                location.Name,
+                location.AdministrativeArea,
+                location.Country,
+                location.Latitude,
+                location.Longitude))
+            .ToArray() ?? [];
+    }
+
+    private async Task<WeatherForecastResponse> GetForecastAsync(
+        OpenMeteoLocation location,
+        CancellationToken cancellationToken)
+    {
         var forecastResponse = await httpClient.GetFromJsonAsync<OpenMeteoForecastApiResponse>(
             CreateForecastUrl(location),
             cancellationToken);

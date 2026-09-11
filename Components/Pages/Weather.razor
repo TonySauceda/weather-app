@@ -21,7 +21,42 @@
                         <path d="M20 10c0 6-8 11-8 11S4 16 4 10a8 8 0 1 1 16 0Z" />
                         <circle cx="12" cy="10" r="2.5" />
                     </svg>
-                    <InputText id="city" class="weather-search__input" @bind-Value="search.City" placeholder="Busca una ciudad…" autocomplete="address-level2" />
+                    <input id="city"
+                           class="weather-search__input"
+                           value="@search.City"
+                           @oninput="OnCityInputAsync"
+                           @onkeydown="HandleSuggestionKeyDownAsync"
+                           @onkeydown:preventDefault="HasActiveCitySuggestion"
+                           @onblur="ClearCitySuggestions"
+                           placeholder="Busca una ciudad…"
+                           autocomplete="address-level2"
+                           role="combobox"
+                           aria-autocomplete="list"
+                           aria-controls="city-suggestions"
+                           aria-expanded="@(hasSearchedCities || citySuggestions.Count > 0)" />
+                    @if (citySuggestions.Count > 0)
+                    {
+                        <div id="city-suggestions" class="city-suggestions" role="listbox" aria-label="Ciudades coincidentes">
+                            @for (var index = 0; index < citySuggestions.Count; index++)
+                            {
+                                var suggestion = citySuggestions[index];
+                                <button class="@(index == activeCitySuggestionIndex ? "city-suggestions__item city-suggestions__item--active" : "city-suggestions__item")"
+                                        type="button"
+                                        role="option"
+                                        aria-selected="@(index == activeCitySuggestionIndex)"
+                                        @key="suggestion"
+                                        @onmousedown="() => SelectCityAsync(suggestion)">
+                                    @suggestion.DisplayName
+                                </button>
+                            }
+                        </div>
+                    }
+                    else if (hasSearchedCities)
+                    {
+                        <p id="city-suggestions" class="city-suggestions city-suggestions--empty" role="status">
+                            Sin coincidencias; puedes buscar el texto escrito.
+                        </p>
+                    }
                 </div>
                 <ValidationMessage For="@(() => search.City)" />
             </div>

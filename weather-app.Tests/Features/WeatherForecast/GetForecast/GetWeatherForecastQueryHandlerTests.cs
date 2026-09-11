@@ -1,6 +1,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Extensions.Caching.Memory;
 using weather_app.Features.WeatherForecast.GetForecast;
+using weather_app.Features.WeatherForecast.SearchCities;
 
 namespace weather_app.Tests.Features.WeatherForecast.GetForecast;
 
@@ -52,6 +53,23 @@ public sealed class GetWeatherForecastQueryHandlerTests
             () => handler.HandleAsync(new GetWeatherForecastQuery("   "), CancellationToken.None));
 
         Assert.AreEqual(0, weatherClient.RequestCount);
+    }
+
+    [TestMethod]
+    public async Task HandleAsync_WithSelectedCity_UsesTheSelectedLocation()
+    {
+        var weatherClient = new FakeOpenMeteoClient(CreateForecast());
+        using var cache = new MemoryCache(new MemoryCacheOptions());
+        var handler = new GetWeatherForecastQueryHandler(weatherClient, cache);
+        var selectedCity = new CitySearchResult("Springfield", "Illinois", "Estados Unidos", 39.798, -89.644);
+
+        var forecast = await handler.HandleAsync(
+            new GetWeatherForecastQuery(selectedCity.DisplayName, selectedCity),
+            CancellationToken.None);
+
+        Assert.AreEqual("Chihuahua, Chihuahua, México", forecast.City);
+        Assert.AreEqual(selectedCity, weatherClient.LastSelectedCity);
+        Assert.AreEqual(1, weatherClient.RequestCount);
     }
 
     private static WeatherForecastResponse CreateForecast() => new(
