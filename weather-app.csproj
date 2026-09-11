@@ -9,4 +9,8 @@
     <BlazorDisableThrowNavigationException>true</BlazorDisableThrowNavigationException>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="weather-app.Tests\**\*.cs" />
+  </ItemGroup>
+
 </Project>

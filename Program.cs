@@ -1,10 +1,14 @@
 using weather_app.Components;
+using weather_app.Application.Mediator;
+using weather_app.Features.WeatherForecast.GetForecast;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+builder.Services.AddScoped<IWeatherMediator, WeatherMediator>();
+builder.Services.AddScoped<IQueryHandler<GetWeatherForecastQuery, WeatherForecastResponse>, GetWeatherForecastQueryHandler>();
 
 var app = builder.Build();
 
