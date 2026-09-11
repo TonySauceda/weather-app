@@ -1,3 +1,4 @@
+@page "/"
 @page "/weather"
 @rendermode InteractiveServer
 @attribute [StreamRendering]
@@ -5,11 +6,9 @@
 
 <PageTitle>Pronóstico del clima</PageTitle>
 
-<section class="weather-page" aria-labelledby="weather-heading">
+<section class="weather-page">
     <header class="weather-page__header">
         <p class="weather-page__eyebrow">Pronóstico del clima</p>
-        <h1 id="weather-heading">El clima, donde lo necesitas</h1>
-        <p>Consulta las condiciones actuales y el pronóstico de los próximos cinco días.</p>
     </header>
 
     <div class="weather-search-container">
@@ -31,6 +30,13 @@
                 @(isLoading ? "Consultando..." : "Buscar")
             </button>
         </EditForm>
+    </div>
+
+    <div class="temperature-unit-toggle-container">
+        <div class="temperature-unit-toggle" role="group" aria-label="Unidad de temperatura">
+            <button class="@(isFahrenheit ? string.Empty : "temperature-unit-toggle__button--selected")" type="button" @onclick="() => isFahrenheit = false">°C</button>
+            <button class="@(isFahrenheit ? "temperature-unit-toggle__button--selected" : string.Empty)" type="button" @onclick="() => isFahrenheit = true">°F</button>
+        </div>
     </div>
 
     @if (isLoading && forecast is null)
@@ -55,9 +61,19 @@
             </div>
             <div class="current-weather__icon"><WeatherIcon Summary="@forecast.Current.Summary" /></div>
             <div class="current-weather__temperature" aria-label="Temperatura actual">
-                <span>@forecast.Current.TemperatureC°</span>
-                <small>Se siente como @forecast.Current.FeelsLikeC°</small>
+                <span>@FormatTemperature(forecast.Current.TemperatureC)</span>
+                <small>Se siente como @FormatTemperature(forecast.Current.FeelsLikeC)</small>
             </div>
+            <dl class="current-weather__metrics">
+                <div>
+                    <dt>Humedad</dt>
+                    <dd>@forecast.Current.HumidityPercentage%</dd>
+                </div>
+                <div>
+                    <dt>Viento</dt>
+                    <dd>@FormatMeasurement(forecast.Current.WindSpeedKph) km/h</dd>
+                </div>
+            </dl>
         </section>
 
         <section class="upcoming-weather" aria-labelledby="upcoming-weather-heading">
@@ -73,12 +89,17 @@
                         <div class="forecast-card__icon"><WeatherIcon Summary="@day.Summary" /></div>
                         <p class="forecast-card__summary">@day.Summary</p>
                         <p class="forecast-card__temperatures">
-                            <span><small>Máx.</small> @day.MaximumTemperatureC°</span>
-                            <span><small>Mín.</small> @day.MinimumTemperatureC°</span>
+                            <span><small>Máx.</small> @FormatTemperature(day.MaximumTemperatureC)</span>
+                            <span><small>Mín.</small> @FormatTemperature(day.MinimumTemperatureC)</span>
+                        </p>
+                        <p class="forecast-card__precipitation">
+                            Lluvia: @day.PrecipitationProbabilityPercentage% · @FormatMeasurement(day.PrecipitationMillimeters) mm
                         </p>
                     </article>
                 }
             </div>
         </section>
+
+        <p class="weather-attribution">Datos meteorológicos por <a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer">Open-Meteo.com</a>.</p>
     }
 </section>

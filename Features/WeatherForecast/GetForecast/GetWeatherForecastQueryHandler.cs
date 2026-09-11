@@ -1,11 +1,12 @@
 using weather_app.Application.Mediator;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace weather_app.Features.WeatherForecast.GetForecast;
 
-public sealed class GetWeatherForecastQueryHandler : IQueryHandler<GetWeatherForecastQuery, WeatherForecastResponse>
+public sealed class GetWeatherForecastQueryHandler(
+    IOpenMeteoClient openMeteoClient,
+    IMemoryCache cache) : IQueryHandler<GetWeatherForecastQuery, WeatherForecastResponse>
 {
-    private static readonly string[] Summaries = ["Soleado", "Parcialmente nublado", "Nublado", "Lluvioso", "Con brisa"];
-
     public async Task<WeatherForecastResponse> HandleAsync(
         GetWeatherForecastQuery query,
         CancellationToken cancellationToken)
@@ -16,32 +17,15 @@ public sealed class GetWeatherForecastQueryHandler : IQueryHandler<GetWeatherFor
             throw new ArgumentException("La ciudad es obligatoria.", nameof(query));
         }
 
-        await Task.Delay(TimeSpan.FromMilliseconds(350), cancellationToken);
+        var cacheKey = $"weather-forecast:{city.ToUpperInvariant()}";
+        if (cache.TryGetValue<WeatherForecastResponse>(cacheKey, out var cachedForecast))
+        {
+            return cachedForecast!;
+        }
 
-        var random = new Random(StringComparer.OrdinalIgnoreCase.GetHashCode(city));
-        var currentTemperature = random.Next(8, 34);
-        var currentDate = DateOnly.FromDateTime(DateTime.Today);
-        var forecasts = Enumerable.Range(1, 5)
-            .Select(dayOffset => CreateDailyForecast(currentDate.AddDays(dayOffset), random))
-            .ToArray();
+        var forecast = await openMeteoClient.GetForecastAsync(city, cancellationToken);
+        cache.Set(cacheKey, forecast, TimeSpan.FromMinutes(10));
 
-        return new WeatherForecastResponse(
-            city,
-            new CurrentWeatherResponse(
-                currentDate,
-                currentTemperature,
-                currentTemperature + random.Next(-2, 4),
-                GetSummary(random)),
-            forecasts);
+        return forecast;
     }
-
-    private static DailyForecastResponse CreateDailyForecast(DateOnly date, Random random)
-    {
-        var minimumTemperature = random.Next(4, 20);
-        var maximumTemperature = random.Next(minimumTemperature + 3, 37);
-
-        return new DailyForecastResponse(date, minimumTemperature, maximumTemperature, GetSummary(random));
-    }
-
-    private static string GetSummary(Random random) => Summaries[random.Next(Summaries.Length)];
 }

@@ -4,10 +4,6 @@
     padding: 2.5rem 0 3rem;
 }
 
-.weather-page__header {
-    max-width: 42rem;
-}
-
 .weather-page__eyebrow,
 .current-weather__city {
     color: #2563eb;
@@ -18,15 +14,44 @@
     text-transform: uppercase;
 }
 
-.weather-page h1 {
-    color: #172554;
-    font-size: clamp(2rem, 5vw, 3.25rem);
-    margin-bottom: 0.75rem;
-}
-
-.weather-page__header > p:last-child,
 .upcoming-weather__heading p {
     color: #475569;
+}
+
+.temperature-unit-toggle-container {
+    display: flex;
+    justify-content: flex-end;
+    margin: 1rem 0 -1rem;
+}
+
+.temperature-unit-toggle {
+    display: inline-flex;
+    border: 1px solid #bfdbfe;
+    border-radius: 0.75rem;
+    overflow: hidden;
+}
+
+.temperature-unit-toggle button {
+    background: #eff6ff;
+    border: 0;
+    color: #1e3a8a;
+    font-weight: 700;
+    min-width: 3.25rem;
+    padding: 0.45rem 0.75rem;
+}
+
+.temperature-unit-toggle button + button {
+    border-left: 1px solid #bfdbfe;
+}
+
+.temperature-unit-toggle button:hover,
+.temperature-unit-toggle button:focus-visible {
+    background: #dbeafe;
+}
+
+.temperature-unit-toggle .temperature-unit-toggle__button--selected {
+    background: #2563eb;
+    color: #ffffff;
 }
 
 .weather-search-container ::deep .weather-search {
@@ -37,7 +62,7 @@
     box-shadow: 0 12px 30px rgba(30, 64, 175, 0.09);
     display: flex;
     gap: 1rem;
-    margin: 2rem 0;
+    margin: 2rem 0 0;
     padding: 1.25rem;
 }
 
@@ -198,6 +223,31 @@
     margin-top: 1rem;
 }
 
+.current-weather__metrics {
+    border-left: 1px solid currentColor;
+    display: grid;
+    gap: 0.75rem;
+    margin: 0;
+    padding-left: 1.25rem;
+}
+
+.current-weather__metrics div {
+    display: grid;
+    gap: 0.1rem;
+}
+
+.current-weather__metrics dt {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.current-weather__metrics dd {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin: 0;
+}
+
 .upcoming-weather__heading {
     align-items: baseline;
     display: flex;
@@ -267,6 +317,22 @@
     font-size: 0.7rem;
     font-weight: 500;
     margin-bottom: 0.2rem;
+}
+
+.forecast-card__precipitation {
+    font-size: 0.85rem;
+    margin: 1rem 0 0;
+}
+
+.weather-attribution {
+    color: #64748b;
+    font-size: 0.8rem;
+    margin: 2rem 0 0;
+    text-align: center;
+}
+
+.weather-attribution a {
+    color: inherit;
 }
 
 .weather-surface {
@@ -343,6 +409,14 @@
 
     .current-weather__temperature {
         text-align: left;
+    }
+
+    .current-weather__metrics {
+        border-left: 0;
+        border-top: 1px solid currentColor;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        padding-left: 0;
+        padding-top: 1rem;
     }
 
     .current-weather__icon {
