@@ -1,0 +1,368 @@
+.weather-page {
+    max-width: 72rem;
+    margin: 0 auto;
+    padding: 2.5rem 0 3rem;
+}
+
+.weather-page__header {
+    max-width: 42rem;
+}
+
+.weather-page__eyebrow,
+.current-weather__city {
+    color: #2563eb;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.4rem;
+    text-transform: uppercase;
+}
+
+.weather-page h1 {
+    color: #172554;
+    font-size: clamp(2rem, 5vw, 3.25rem);
+    margin-bottom: 0.75rem;
+}
+
+.weather-page__header > p:last-child,
+.upcoming-weather__heading p {
+    color: #475569;
+}
+
+.weather-search-container ::deep .weather-search {
+    align-items: end;
+    background: #ffffff;
+    border: 1px solid #dbeafe;
+    border-radius: 1.75rem;
+    box-shadow: 0 12px 30px rgba(30, 64, 175, 0.09);
+    display: flex;
+    gap: 1rem;
+    margin: 2rem 0;
+    padding: 1.25rem;
+}
+
+.weather-search__field {
+    flex: 1;
+    min-width: 0;
+}
+
+.weather-search__field label {
+    color: #1e293b;
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+}
+
+.weather-search__control {
+    position: relative;
+}
+
+.location-icon {
+    position: absolute;
+    left: 1.1rem;
+    top: 1rem;
+    width: 1.35rem;
+    height: 1.35rem;
+    color: #64748b;
+    pointer-events: none;
+}
+
+.weather-search__control ::deep .weather-search__input {
+    border: 1px solid #d8e2f0;
+    border-radius: 1.1rem;
+    background: #f5f8fc;
+    color: #172554;
+    min-height: 3.4rem;
+    padding: 0.9rem 1.1rem 0.9rem 3.1rem;
+    width: 100%;
+    box-shadow: none;
+    transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+}
+
+.weather-search__control ::deep .weather-search__input:focus {
+    outline: 2px solid #2563eb;
+    outline-offset: 2px;
+    border-color: #93c5fd;
+    background: #ffffff;
+    box-shadow: 0 0 0 5px #dbeafe;
+}
+
+.weather-search__control ::deep .weather-search__input.invalid {
+    border-color: #b91c1c;
+}
+
+.weather-search__field ::deep .validation-message {
+    margin-top: 0.6rem;
+    font-size: 0.875rem;
+}
+
+.weather-search__button {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    border: 0;
+    border-radius: 1.1rem;
+    color: #ffffff;
+    font-weight: 700;
+    min-height: 3.4rem;
+    padding: 0.9rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    box-shadow: 0 6px 16px rgb(37 99 235 / 20%);
+}
+
+.weather-search__button svg {
+    width: 1.2rem;
+    height: 1.2rem;
+}
+
+.weather-search__button:hover:not(:disabled) {
+    background: #1e40af;
+}
+
+.weather-search__button:focus-visible {
+    outline: 3px solid #2563eb;
+    outline-offset: 3px;
+}
+
+.weather-search__button:disabled {
+    cursor: wait;
+    opacity: 0.7;
+}
+
+.weather-state {
+    background: #eff6ff;
+    border-radius: 0.75rem;
+    color: #1e3a8a;
+    padding: 1rem;
+}
+
+.weather-state--error {
+    background: #fef2f2;
+    color: #991b1b;
+}
+
+.current-weather {
+    align-items: center;
+    border-radius: 1.75rem;
+    box-shadow: 0 18px 35px rgba(30, 64, 175, 0.2);
+    display: flex;
+    justify-content: space-between;
+    margin: 2.5rem 0;
+    min-height: 19rem;
+    gap: 1.5rem;
+    padding: clamp(1.5rem, 5vw, 3.25rem);
+}
+
+.current-weather__city {
+    color: inherit;
+    overflow-wrap: anywhere;
+}
+
+.current-weather__details {
+    flex: 1;
+    min-width: 0;
+}
+
+.current-weather__icon {
+    flex: 0 0 clamp(6rem, 13vw, 10rem);
+    width: clamp(6rem, 13vw, 10rem);
+    height: clamp(6rem, 13vw, 10rem);
+}
+
+.current-weather h2 {
+    font-size: clamp(1.3rem, 3vw, 2rem);
+}
+
+.current-weather__summary {
+    font-size: 1.1rem;
+    margin-bottom: 0;
+}
+
+.current-weather__temperature {
+    text-align: right;
+    flex-shrink: 0;
+}
+
+.current-weather__temperature span {
+    display: block;
+    font-size: clamp(4rem, 12vw, 7.5rem);
+    font-weight: 700;
+    letter-spacing: -0.08em;
+    line-height: 0.85;
+}
+
+.current-weather__temperature small {
+    display: block;
+    font-size: 1rem;
+    margin-top: 1rem;
+}
+
+.upcoming-weather__heading {
+    align-items: baseline;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.upcoming-weather__heading h2 {
+    color: #172554;
+    font-size: 1.45rem;
+    margin: 0;
+}
+
+.upcoming-weather__heading p {
+    margin: 0;
+}
+
+.forecast-grid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.forecast-card {
+    border: 1px solid rgb(148 163 184 / 20%);
+    border-radius: 1.4rem;
+    padding: 1.1rem;
+    box-shadow: 0 6px 20px rgb(15 23 42 / 6%);
+}
+
+.forecast-card__icon {
+    width: 4.75rem;
+    height: 4.75rem;
+    margin: 0.5rem 0 1rem;
+}
+
+.forecast-card__date {
+    color: inherit;
+    font-size: 0.85rem;
+    font-weight: 700;
+    margin-bottom: 1.2rem;
+    text-transform: capitalize;
+}
+
+.forecast-card__summary {
+    color: inherit;
+    min-height: 3rem;
+}
+
+.forecast-card__temperatures {
+    align-items: baseline;
+    display: flex;
+    gap: 0.45rem;
+    justify-content: space-between;
+    margin-bottom: 0;
+}
+
+.forecast-card__temperatures span {
+    color: inherit;
+    font-size: 1.45rem;
+    font-weight: 700;
+}
+
+.forecast-card__temperatures small {
+    color: inherit;
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 500;
+    margin-bottom: 0.2rem;
+}
+
+.weather-surface {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background: var(--weather-background, linear-gradient(135deg, #e2e8f0, #f8fafc));
+    color: var(--weather-ink, #334155);
+}
+
+.weather-surface::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: var(--weather-texture, none);
+}
+
+.weather-surface[data-condition="Soleado"] {
+    --weather-background: linear-gradient(125deg, #fff7df, #fde5a4);
+    --weather-ink: #713f12;
+    --weather-texture: radial-gradient(circle at 80% 15%, #fff9 0 12%, transparent 12.5% 22%, #fff3 22.5% 32%, transparent 32.5%);
+}
+
+.weather-surface[data-condition="Parcialmente nublado"] {
+    --weather-background: linear-gradient(130deg, #e0f2fe, #dbeafe 55%, #fef3c7);
+    --weather-ink: #1e3a5f;
+    --weather-texture: radial-gradient(ellipse at 90% 0%, #fff8, transparent 65%);
+}
+
+.weather-surface[data-condition="Nublado"] {
+    --weather-background: linear-gradient(140deg, #e2e8f0, #cbd5e1);
+    --weather-ink: #334155;
+    --weather-texture: radial-gradient(ellipse at 80% 0%, #fff9 0 22%, transparent 23%), radial-gradient(ellipse at 100% 10%, #fff4 0 30%, transparent 31%);
+}
+
+.weather-surface[data-condition="Lluvioso"] {
+    --weather-background: linear-gradient(135deg, #243d62, #365f82);
+    --weather-ink: #f0f9ff;
+    --weather-texture: repeating-linear-gradient(115deg, transparent 0 28px, #dbeafe0a 29px 31px, transparent 32px 58px);
+}
+
+.weather-surface[data-condition="Con brisa"] {
+    --weather-background: linear-gradient(135deg, #e0f2f1, #c6e9e4);
+    --weather-ink: #134e4a;
+    --weather-texture: repeating-linear-gradient(170deg, transparent 0 45px, #ffffff40 46px 48px, transparent 49px 76px);
+}
+
+@media (max-width: 800px) {
+    .current-weather {
+        flex-wrap: wrap;
+    }
+
+    .forecast-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 540px) {
+    .weather-page {
+        padding-top: 1.5rem;
+    }
+
+    .weather-search-container ::deep .weather-search,
+    .current-weather {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .weather-search__button {
+        width: 100%;
+    }
+
+    .current-weather__temperature {
+        text-align: left;
+    }
+
+    .current-weather__icon {
+        flex-basis: auto;
+        align-self: flex-start;
+    }
+
+    .upcoming-weather__heading {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .forecast-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .weather-search__control ::deep .weather-search__input {
+        transition: none;
+    }
+}

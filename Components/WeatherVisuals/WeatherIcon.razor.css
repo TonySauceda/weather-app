@@ -1,0 +1,13 @@
+.weather-icon {
+    display: block;
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 6px 6px rgb(15 23 42 / 12%));
+}
+
+.sun { fill: #fcd34d; stroke: #f59e0b; }
+.rays { stroke: #f59e0b; }
+.cloud { fill: #f8fafc; stroke: #94a3b8; }
+.cloud-back { fill: #cbd5e1; stroke: #94a3b8; }
+.rain { stroke: #38bdf8; }
+.wind { stroke: currentColor; }

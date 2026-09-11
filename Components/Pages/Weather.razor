@@ -1,64 +1,84 @@
-﻿@page "/weather"
+@page "/weather"
+@rendermode InteractiveServer
 @attribute [StreamRendering]
+@using weather_app.Components.WeatherVisuals
 
-<PageTitle>Weather</PageTitle>
+<PageTitle>Pronóstico del clima</PageTitle>
 
-<h1>Weather</h1>
+<section class="weather-page" aria-labelledby="weather-heading">
+    <header class="weather-page__header">
+        <p class="weather-page__eyebrow">Pronóstico del clima</p>
+        <h1 id="weather-heading">El clima, donde lo necesitas</h1>
+        <p>Consulta las condiciones actuales y el pronóstico de los próximos cinco días.</p>
+    </header>
 
-<p>This component demonstrates showing data.</p>
+    <div class="weather-search-container">
+        <EditForm class="weather-search" Model="search" OnValidSubmit="SearchAsync">
+            <DataAnnotationsValidator />
+            <div class="weather-search__field">
+                <label for="city">Ciudad</label>
+                <div class="weather-search__control">
+                    <svg class="location-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true" focusable="false">
+                        <path d="M20 10c0 6-8 11-8 11S4 16 4 10a8 8 0 1 1 16 0Z" />
+                        <circle cx="12" cy="10" r="2.5" />
+                    </svg>
+                    <InputText id="city" class="weather-search__input" @bind-Value="search.City" placeholder="Busca una ciudad…" autocomplete="address-level2" />
+                </div>
+                <ValidationMessage For="@(() => search.City)" />
+            </div>
+            <button class="weather-search__button" type="submit" disabled="@isLoading">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false"><circle cx="10.5" cy="10.5" r="6.5" /><path d="m16 16 4 4" /></svg>
+                @(isLoading ? "Consultando..." : "Buscar")
+            </button>
+        </EditForm>
+    </div>
 
-@if (forecasts == null)
-{
-    <p><em>Loading...</em></p>
-}
-else
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th aria-label="Temperature in Celsius">Temp. (C)</th>
-                <th aria-label="Temperature in Fahrenheit">Temp. (F)</th>
-                <th>Summary</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var forecast in forecasts)
-            {
-                <tr>
-                    <td>@forecast.Date.ToShortDateString()</td>
-                    <td>@forecast.TemperatureC</td>
-                    <td>@forecast.TemperatureF</td>
-                    <td>@forecast.Summary</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
-
-@code {
-    private WeatherForecast[]? forecasts;
-
-    protected override async Task OnInitializedAsync()
+    @if (isLoading && forecast is null)
     {
-        // Simulate asynchronous loading to demonstrate streaming rendering
-        await Task.Delay(500);
-
-        var startDate = DateOnly.FromDateTime(DateTime.Now);
-        var summaries = new[] { "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching" };
-        forecasts = Enumerable.Range(1, 5).Select(index => new WeatherForecast
-        {
-            Date = startDate.AddDays(index),
-            TemperatureC = Random.Shared.Next(-20, 55),
-            Summary = summaries[Random.Shared.Next(summaries.Length)]
-        }).ToArray();
+        <p class="weather-state" role="status">Cargando pronóstico...</p>
     }
-
-    private class WeatherForecast
+    else if (errorMessage is not null)
     {
-        public DateOnly Date { get; set; }
-        public int TemperatureC { get; set; }
-        public string? Summary { get; set; }
-        public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+        <p class="weather-state weather-state--error" role="alert">@errorMessage</p>
     }
-}
+    else if (forecast is null)
+    {
+        <p class="weather-state">No hay un pronóstico disponible.</p>
+    }
+    else
+    {
+        <section class="current-weather weather-surface" data-condition="@forecast.Current.Summary" aria-labelledby="current-weather-heading">
+            <div class="current-weather__details">
+                <p class="current-weather__city">@forecast.City</p>
+                <h2 id="current-weather-heading">Hoy · @FormatDate(forecast.Current.Date)</h2>
+                <p class="current-weather__summary">@forecast.Current.Summary</p>
+            </div>
+            <div class="current-weather__icon"><WeatherIcon Summary="@forecast.Current.Summary" /></div>
+            <div class="current-weather__temperature" aria-label="Temperatura actual">
+                <span>@forecast.Current.TemperatureC°</span>
+                <small>Se siente como @forecast.Current.FeelsLikeC°</small>
+            </div>
+        </section>
+
+        <section class="upcoming-weather" aria-labelledby="upcoming-weather-heading">
+            <div class="upcoming-weather__heading">
+                <h2 id="upcoming-weather-heading">Próximos días</h2>
+                <p>Planea tu semana.</p>
+            </div>
+            <div class="forecast-grid">
+                @foreach (var day in forecast.UpcomingDays)
+                {
+                    <article class="forecast-card weather-surface" data-condition="@day.Summary" @key="day.Date">
+                        <p class="forecast-card__date">@FormatDate(day.Date)</p>
+                        <div class="forecast-card__icon"><WeatherIcon Summary="@day.Summary" /></div>
+                        <p class="forecast-card__summary">@day.Summary</p>
+                        <p class="forecast-card__temperatures">
+                            <span><small>Máx.</small> @day.MaximumTemperatureC°</span>
+                            <span><small>Mín.</small> @day.MinimumTemperatureC°</span>
+                        </p>
+                    </article>
+                }
+            </div>
+        </section>
+    }
+</section>
