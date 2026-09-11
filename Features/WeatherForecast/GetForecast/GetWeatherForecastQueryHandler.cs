@@ -17,13 +17,17 @@ public sealed class GetWeatherForecastQueryHandler(
             throw new ArgumentException("La ciudad es obligatoria.", nameof(query));
         }
 
-        var cacheKey = $"weather-forecast:{city.ToUpperInvariant()}";
+        var cacheKey = query.SelectedCity is { } selectedCity
+            ? $"weather-forecast:{selectedCity.Latitude}:{selectedCity.Longitude}"
+            : $"weather-forecast:{city.ToUpperInvariant()}";
         if (cache.TryGetValue<WeatherForecastResponse>(cacheKey, out var cachedForecast))
         {
             return cachedForecast!;
         }
 
-        var forecast = await openMeteoClient.GetForecastAsync(city, cancellationToken);
+        var forecast = query.SelectedCity is { } selection
+            ? await openMeteoClient.GetForecastAsync(selection, cancellationToken)
+            : await openMeteoClient.GetForecastAsync(city, cancellationToken);
         cache.Set(cacheKey, forecast, TimeSpan.FromMinutes(10));
 
         return forecast;

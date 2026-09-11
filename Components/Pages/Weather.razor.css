@@ -116,6 +116,49 @@
     border-color: #b91c1c;
 }
 
+.city-suggestions {
+    background: #ffffff;
+    border: 1px solid #bfdbfe;
+    border-radius: 0.9rem;
+    box-shadow: 0 12px 24px rgb(30 64 175 / 16%);
+    display: grid;
+    left: 0;
+    margin: 0.4rem 0 0;
+    overflow: hidden;
+    position: absolute;
+    right: 0;
+    top: 100%;
+    z-index: 2;
+}
+
+.city-suggestions__item {
+    background: #ffffff;
+    border: 0;
+    border-bottom: 1px solid #dbeafe;
+    color: #172554;
+    cursor: pointer;
+    padding: 0.75rem 1rem;
+    text-align: left;
+}
+
+.city-suggestions__item:last-child {
+    border-bottom: 0;
+}
+
+.city-suggestions__item:hover,
+.city-suggestions__item:focus-visible,
+.city-suggestions__item--active {
+    background: #eff6ff;
+    color: #1d4ed8;
+    outline: 0;
+}
+
+.city-suggestions--empty {
+    color: #475569;
+    margin-bottom: 0;
+    padding: 0.75rem 1rem;
+}
+
 .weather-search__field ::deep .validation-message {
     margin-top: 0.6rem;
     font-size: 0.875rem;
