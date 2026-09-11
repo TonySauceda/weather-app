@@ -12,7 +12,7 @@
     </header>
 
     <div class="weather-search-container">
-        <EditForm class="weather-search" Model="search" OnValidSubmit="SearchAsync">
+        <EditForm class="weather-search" EditContext="searchEditContext" OnValidSubmit="SearchAsync">
             <DataAnnotationsValidator />
             <div class="weather-search__field">
                 <label for="city">Ciudad</label>
@@ -67,12 +67,15 @@
         </EditForm>
     </div>
 
-    <div class="temperature-unit-toggle-container">
-        <div class="temperature-unit-toggle" role="group" aria-label="Unidad de temperatura">
-            <button class="@(isFahrenheit ? string.Empty : "temperature-unit-toggle__button--selected")" type="button" @onclick="() => isFahrenheit = false">°C</button>
-            <button class="@(isFahrenheit ? "temperature-unit-toggle__button--selected" : string.Empty)" type="button" @onclick="() => isFahrenheit = true">°F</button>
-        </div>
-    </div>
+    @if (favoriteCities.Items.Count > 0)
+    {
+        <nav class="favorite-cities" aria-label="Ciudades favoritas">
+            @foreach (var favorite in favoriteCities.Items)
+            {
+                <button class="@(IsSelectedFavorite(favorite) ? "favorite-cities__button--selected" : string.Empty)" type="button" @key="favorite" @onclick="() => LoadFavoriteAsync(favorite)">@favorite.Name</button>
+            }
+        </nav>
+    }
 
     @if (isLoading && forecast is null)
     {
@@ -82,13 +85,30 @@
     {
         <p class="weather-state weather-state--error" role="alert">@errorMessage</p>
     }
-    else if (forecast is null)
+    else if (forecast is not null)
     {
-        <p class="weather-state">No hay un pronóstico disponible.</p>
-    }
-    else
-    {
+        @if (favoriteMessage is not null)
+        {
+            <p class="favorite-cities__message" role="status">@favoriteMessage</p>
+        }
+
+        <div class="temperature-unit-toggle-container">
+            <div class="temperature-unit-toggle" role="group" aria-label="Unidad de temperatura">
+                <button class="@(isFahrenheit ? string.Empty : "temperature-unit-toggle__button--selected")" type="button" @onclick="() => isFahrenheit = false">°C</button>
+                <button class="@(isFahrenheit ? "temperature-unit-toggle__button--selected" : string.Empty)" type="button" @onclick="() => isFahrenheit = true">°F</button>
+            </div>
+        </div>
+
         <section class="current-weather weather-surface" data-condition="@forecast.Current.Summary" aria-labelledby="current-weather-heading">
+            <button class="@(IsCurrentCityFavorite ? "current-weather__favorite-button current-weather__favorite-button--active" : "current-weather__favorite-button")"
+                    type="button"
+                    aria-label="@(IsCurrentCityFavorite ? "Quitar de favoritos" : "Agregar a favoritos")"
+                    aria-pressed="@IsCurrentCityFavorite"
+                    @onclick="ToggleFavoriteAsync">
+                <svg viewBox="0 0 24 24" fill="@(IsCurrentCityFavorite ? "currentColor" : "none")" stroke="currentColor" stroke-width="1.8" aria-hidden="true" focusable="false">
+                    <path d="m12 3.7 2.57 5.21 5.75.84-4.16 4.05.98 5.72L12 16.82l-5.14 2.7.98-5.72-4.16-4.05 5.75-.84L12 3.7Z" />
+                </svg>
+            </button>
             <div class="current-weather__details">
                 <p class="current-weather__city">@forecast.City</p>
                 <h2 id="current-weather-heading">Hoy · @FormatDate(forecast.Current.Date)</h2>
