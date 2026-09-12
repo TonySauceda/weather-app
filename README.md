@@ -39,6 +39,7 @@ Los datos se obtienen en tiempo real desde [Open-Meteo](https://open-meteo.com/)
 | Caché | `IMemoryCache` en memoria |
 | Favoritos | `localStorage` mediante JavaScript interop |
 | Pruebas | MSTest |
+| Contenedorización | Docker con imágenes oficiales de .NET 10 |
 
 ## Arquitectura
 
@@ -89,6 +90,39 @@ dotnet run --launch-profile http
 ```
 
 Después, abre [http://localhost:5077](http://localhost:5077). También puedes usar el perfil `https`, que expone `https://localhost:7217` y puede requerir confiar el certificado de desarrollo de .NET.
+
+## Despliegue con Docker
+
+El `Dockerfile` crea una imagen de producción en varias etapas: compila con el SDK de .NET 10, publica la aplicación y la ejecuta con el usuario sin privilegios de la imagen oficial. El contenedor escucha en el puerto `8080` y no incluye pruebas ni artefactos locales, que se excluyen mediante `.dockerignore`.
+
+Construye la imagen desde la raíz del repositorio:
+
+```bash
+docker build -t weather-app:latest .
+```
+
+La aplicación está diseñada para ejecutarse detrás de un proxy inverso que termine TLS. Para iniciarla en segundo plano y limitar el puerto interno al host local:
+
+```bash
+docker run -d \
+  --name weather-app \
+  --restart unless-stopped \
+  -p 127.0.0.1:8080:8080 \
+  -e ASPNETCORE_ENVIRONMENT=Production \
+  weather-app:latest
+```
+
+Configura el proxy para enviar las solicitudes a `http://127.0.0.1:8080` y para incluir `X-Forwarded-Proto: https`. El contenedor procesa ese encabezado para conservar el esquema HTTPS original y evitar redirecciones cíclicas.
+
+No expongas directamente el puerto `8080` a Internet: debe estar disponible únicamente para el proxy de confianza. Si el proxy se ejecuta en otro contenedor, conéctalo mediante una red privada de Docker en lugar de publicar el puerto en todas las interfaces.
+
+Para revisar los registros o detener el contenedor:
+
+```bash
+docker logs -f weather-app
+docker stop weather-app
+docker rm weather-app
+```
 
 ## Pruebas
 
